@@ -1,6 +1,6 @@
 class Course {
     private String courseName;
-    private int duration; // in weeks
+    private int duration; 
 
     public Course(String courseName, int duration) {
         this.courseName = courseName;
