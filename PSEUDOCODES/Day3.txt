@@ -1,0 +1,117 @@
+CLASS Account
+    ATTRIBUTES:
+        accountNumber : int
+        accountHolder : String
+        balance : double
+
+    CONSTRUCTOR(accountNumber, accountHolder, balance)
+        this.accountNumber = accountNumber
+        this.accountHolder = accountHolder
+        this.balance = balance
+
+    METHOD deposit(amount : double)
+        balance = balance + amount
+        PRINT "Deposited", amount, "New Balance:", balance
+
+    METHOD withdraw(amount : double)
+        PRINT "Default withdrawal"
+
+    METHOD getBalance()
+        RETURN balance
+END CLASS
+
+
+CLASS SavingAccount EXTENDS Account
+    ATTRIBUTES:
+        withdrawalLimit : double = 10000
+
+    CONSTRUCTOR(accountNumber, accountHolder, balance)
+        CALL super(accountNumber, accountHolder, balance)
+
+    OVERRIDE METHOD withdraw(amount : double)
+        IF amount <= withdrawalLimit AND amount <= balance THEN
+            balance = balance - amount
+            PRINT "Withdrawal successful. Remaining balance:", balance
+        ELSE
+            PRINT "Withdrawal denied"
+END CLASS
+
+
+CLASS CurrentAccount EXTENDS Account
+    ATTRIBUTES:
+        overdraftLimit : double = 5000
+
+    CONSTRUCTOR(accountNumber, accountHolder, balance)
+        CALL super(accountNumber, accountHolder, balance)
+
+    OVERRIDE METHOD withdraw(amount : double)
+        IF amount <= (balance + overdraftLimit) THEN
+            balance = balance - amount
+            PRINT "Withdrawal successful. Remaining balance:", balance
+        ELSE
+            PRINT "Withdrawal denied"
+END CLASS
+
+//Main Class
+START
+    acc1 = NEW SavingAccount(101, "Prakhar", 20000)
+    acc2 = NEW CurrentAccount(102, "Sakshi", 10000)
+    acc1.withdraw(5000)
+    acc2.withdraw(12000)
+END
+
+INTERFACE Rentable
+    METHOD rent(days : int) : double
+END INTERFACE
+
+ABSTRACT CLASS Vehicle IMPLEMENTS Rentable
+    ATTRIBUTES:
+        vehicleId : int
+        brand : String
+        basePricePerDay : double
+
+    CONSTRUCTOR(vehicleId, brand, basePricePerDay)
+        this.vehicleId = vehicleId
+        this.brand = brand
+        this.basePricePerDay = basePricePerDay
+
+    ABSTRACT METHOD rent(days : int) : double
+END CLASS
+
+
+CLASS Car EXTENDS Vehicle
+    CONSTRUCTOR(vehicleId, brand, basePricePerDay)
+        CALL super(vehicleId, brand, basePricePerDay)
+
+    OVERRIDE METHOD rent(days : int) : double
+        RETURN days * basePricePerDay
+END CLASS
+
+
+CLASS Bike EXTENDS Vehicle
+    CONSTRUCTOR(vehicleId, brand, basePricePerDay)
+        CALL super(vehicleId, brand, basePricePerDay)
+
+    OVERRIDE METHOD rent(days : int) : double
+        RETURN days * basePricePerDay * 0.8
+END CLASS
+
+
+CLASS VehicleFactory
+    METHOD getVehicle(type : String, id : int, brand : String, price : double) : Vehicle
+        IF type == "Car" THEN
+            RETURN NEW Car(id, brand, price)
+        ELSE IF type == "Bike" THEN
+            RETURN NEW Bike(id, brand, price)
+        ELSE
+            RETURN NULL
+END CLASS
+
+
+START
+    factory = NEW VehicleFactory()
+    v1 = factory.getVehicle("Car", 1, "Toyota", 2000)
+    v2 = factory.getVehicle("Bike", 2, "Yamaha", 1000)
+    PRINT v1.rent(5)
+    PRINT v2.rent(3)
+END
